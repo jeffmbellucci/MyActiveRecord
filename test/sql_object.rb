@@ -23,6 +23,5 @@ p Human.all
 p Cat.all
 
 c = Cat.new(:name => "Gizmo", :owner_id => 1)
-c.attribute_values
 c.save # create
 c.save # update

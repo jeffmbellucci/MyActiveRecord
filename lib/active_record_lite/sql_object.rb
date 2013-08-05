@@ -29,13 +29,32 @@ class SQLObject < MassObject
   end
 
   def create
-    sql_attributes = self.class.attributes.join(",")
+    attrs = self.class.attributes
+    num_questions = attrs.length
+    sql_attributes = attrs.join(", ")
+    question_marks = (["?"] * num_questions).join(", ")
+    p sql_attributes
+    p question_marks
+    DBConnection.execute(<<-SQL, *attribute_values) 
+        INSERT INTO #{self.class.table_name} 
+      (#{sql_attributes}) VALUES (#{question_marks})
+    SQL
+    self.id = DBConnection.last_insert_row_id
   end
 
   def update
+    line = self.class.attributes.map { |attribute| "#{attribute} = ?" }
+    line = line.join(", ")
+    p line
+        DBConnection.execute(<<-SQL, *attribute_values, id)
+          UPDATE #{self.class.table_name}
+             SET #{line} WHERE id = ?
+        SQL
   end
 
   def save
+    update if self.id
+    create unless self.id
   end
 
   def attribute_values
