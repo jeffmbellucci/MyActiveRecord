@@ -6,6 +6,9 @@ require 'active_support/inflector'
 
 
 class SQLObject < MassObject
+  extend Associatable
+  extend Searchable
+  
   def self.set_table_name(table_name)
     @table_name = table_name
   end
